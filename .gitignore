@@ -1,0 +1,16 @@
+# Pasta de configurações do Visual Studio
+.vs/
+
+# Pastas de compilação (Build output)
+[Bb]in/
+[Oo]bj/
+
+# Arquivos de usuário específicos
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Outros
+*.DS_Store
+Thumbs.db

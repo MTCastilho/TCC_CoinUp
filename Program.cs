@@ -1,0 +1,93 @@
+using Coin_up.Data;
+using Coin_up.Repositories;
+using Coin_up.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+
+var builder = WebApplication.CreateBuilder(args);
+
+string firebaseProjectId = builder.Configuration["FireBase:LocalId"];
+string connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+string coisa = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Add services to the container
+builder.Services.AddDbContext<CoinUpDbContext>(options =>
+    options.UseNpgsql(connectionString)
+);
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddControllers();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = $"https://securetoken.google.com/{firebaseProjectId}";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = $"https://securetoken.google.com/{firebaseProjectId}",
+            ValidateAudience = true,
+            ValidAudience = firebaseProjectId,
+            ValidateLifetime = true
+        };
+    });
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    // Opcional: Adiciona informações básicas à sua documentação
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Minha API Protegida",
+        Version = "v1",
+        Description = "API para autenticação e acesso a dados."
+    });
+
+    // 1. DEFINIR o esquema de segurança que a API usa (Bearer Token)
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Autenticação JWT usando o esquema Bearer. \r\n\r\n " +
+                      "Digite 'Bearer' [espaço] e depois o seu token no campo abaixo. " +
+                      "\r\n\r\nExemplo: Bearer 12345abcdef"
+    });
+
+    // 2. EXIGIR que o Swagger UI envie o token nas chamadas para os endpoints
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
