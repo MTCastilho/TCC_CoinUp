@@ -8,7 +8,7 @@ namespace Coin_up.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/app/[controller]")]
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
@@ -18,9 +18,8 @@ namespace Coin_up.Controllers
             _usuarioService = usuarioService;
         }
 
-        [HttpPost]
+        [HttpPost("cadastro")]
         [AllowAnonymous]
-        [Route("/cadastro")]
         public async Task<IActionResult> CreateAsync([FromBody] UsuarioCadastroInputDto input)
         {
             var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier);

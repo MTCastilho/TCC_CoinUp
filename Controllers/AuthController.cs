@@ -1,33 +1,25 @@
 ﻿using Coin_up.Dtos;
-using Coin_up.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Security.Claims;
 
 namespace Coin_up.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/app/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IUsuarioRepository _usuarioRepository;
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<string> _logger;
 
-        public AuthController(IUsuarioRepository usuarioRepository, IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<string> logger)
+        public AuthController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
-            _usuarioRepository = usuarioRepository;
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
-            _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet("login")]
         [AllowAnonymous]
-        [Route("/login")]
         public async Task<IActionResult> GetUsuarioFirebaseUidAsync(string email, string password)
         {
             var firebaseApiKey = _configuration["FireBase:ApiKey"];

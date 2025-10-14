@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Coin_up.Migrations
 {
     /// <inheritdoc />
-    public partial class CriandoTabelasIniciais : Migration
+    public partial class CriandoNovoBanco : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,9 +18,10 @@ namespace Coin_up.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FirebaseUid = table.Column<string>(type: "text", nullable: false),
                     Nome = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Objetivo = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     Email = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    Telefone = table.Column<string>(type: "text", nullable: false),
                     Sexo = table.Column<int>(type: "integer", nullable: false),
-                    Idade = table.Column<int>(type: "integer", nullable: false),
                     PontosDeExperiencia = table.Column<int>(type: "integer", nullable: false),
                     Rank = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -36,7 +37,6 @@ namespace Coin_up.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Nome = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    SaldoInicial = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     SaldoAtual = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     TipoConta = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -55,12 +55,9 @@ namespace Coin_up.Migrations
                 name: "Quests",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Titulo = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     Descricao = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    Motivacao = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     DataDeCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DataDeExpiracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -68,7 +65,7 @@ namespace Coin_up.Migrations
                     TipoDeObjetivo = table.Column<int>(type: "integer", nullable: false),
                     CategoriaAlvo = table.Column<int>(type: "integer", nullable: true),
                     ValorAlvo = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    ProgressoAtual = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    ProgressoAtual = table.Column<int>(type: "integer", nullable: false),
                     PontosDeExperiencia = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -108,7 +105,7 @@ namespace Coin_up.Migrations
                         column: x => x.UsuarioId,
                         principalTable: "Usuarios",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

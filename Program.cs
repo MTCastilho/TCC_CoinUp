@@ -9,18 +9,28 @@ var builder = WebApplication.CreateBuilder(args);
 
 string firebaseProjectId = builder.Configuration["FireBase:LocalId"];
 string connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
-string coisa = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Add services to the container
 builder.Services.AddDbContext<CoinUpDbContext>(options =>
     options.UseNpgsql(connectionString)
 );
-builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddHttpClient();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
+
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IContaRepository, ContaRepository>();
+builder.Services.AddScoped<IContaService, ContaService>();
+builder.Services.AddScoped<ITransacaoRepository, TransacaoRepository>();
+builder.Services.AddScoped<ITransacaoService, TransacaoService>();
+builder.Services.AddScoped<IQuestGenerateService, QuestGenerateService>();
+builder.Services.AddScoped<IQuestService, QuestService>();
+builder.Services.AddScoped<IQuestRepository, QuestRepository>();
+
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -31,7 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = $"https://securetoken.google.com/{firebaseProjectId}",
             ValidateAudience = true,
             ValidAudience = firebaseProjectId,
-            ValidateLifetime = true
+            ValidateLifetime = true,
         };
     });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

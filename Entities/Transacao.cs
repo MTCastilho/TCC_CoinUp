@@ -7,7 +7,7 @@ public class Transacao
 {
     [Key]
     public Guid Id { get; set; }
-    
+
     [Required]
     public Guid UsuarioId { get; set; }
 
@@ -25,7 +25,7 @@ public class Transacao
     public decimal Valor { get; set; }
 
     [Required]
-    public DateTime Data { get; set; }
+    public DateTime Data { get; set; } = DateTime.UtcNow;
 
     [ForeignKey("UsuarioId")]
     public virtual Usuario Usuario { get; set; }

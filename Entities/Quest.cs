@@ -7,21 +7,14 @@ public class Quest
 {
     // MUDANÇA: Adicionada Chave Primária
     [Key]
-    public long Id { get; set; }
+    public Guid Id { get; set; }
 
     [Required]
     public Guid UserId { get; set; }
 
     [Required]
-    [MaxLength(150)]
-    public string Titulo { get; set; }
-
-    [Required]
     [MaxLength(500)]
     public string Descricao { get; set; }
-
-    [MaxLength(500)]
-    public string? Motivacao { get; set; }
 
     [Required]
     public EnumQuestStatus Status { get; set; } = EnumQuestStatus.Ativa;
@@ -37,8 +30,7 @@ public class Quest
     [Column(TypeName = "decimal(18, 2)")]
     public decimal ValorAlvo { get; set; }
 
-    [Column(TypeName = "decimal(18, 2)")]
-    public decimal ProgressoAtual { get; set; } = 0;
+    public int ProgressoAtual { get; set; } = 0;
 
     public int PontosDeExperiencia { get; set; }
 

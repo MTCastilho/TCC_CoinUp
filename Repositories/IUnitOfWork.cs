@@ -1,11 +1,13 @@
-﻿
-namespace Coin_up.Repositories
+﻿namespace Coin_up.Repositories
 {
     public interface IUnitOfWork : IDisposable
     {
         // Para cada entidade que você tem um repositório, adicione uma propriedade aqui.
         // Isso permite que seus serviços acessem os repositórios através da Unit of Work.
-        IUsuarioRepository Usuarios { get; }
+        IUsuarioRepository Usuario { get; }
+        IContaRepository Conta { get; }
+        ITransacaoRepository Transacao { get; }
+        IQuestRepository Quest { get; }
         // IContaRepository Contas { get; } // Exemplo, se você criar um repositório para Contas
         // ITransacaoRepository Transacoes { get; } // E assim por diante...
 

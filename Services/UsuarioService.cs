@@ -28,7 +28,7 @@ namespace Coin_up.Services
             };
 
             // ETAPA 3: Persistência (Salvar no banco)
-            await _unitOfWork.Usuarios.AddAsync(novoUsuario);
+            await _unitOfWork.Usuario.AddAsync(novoUsuario);
             await _unitOfWork.CompleteAsync();
 
             // ETAPA 4: Retorno (Mapear para um DTO de resposta)

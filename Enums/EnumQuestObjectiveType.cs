@@ -10,11 +10,8 @@
     
         // Ex: Não tenha nenhuma despesa na categoria Lazer por 7 dias
         NaoGastarEmCategoria = 2,
-    
-        // Ex: Cadastre 10 despesas este mês
-        RegistrarNumeroDeTransacoes = 3,
 
         // Ex: Mantenha o saldo da conta X acima de R$ 500
-        ManterSaldoAcimaDe = 4
+        ManterSaldoAcimaDe = 3
     }
 }

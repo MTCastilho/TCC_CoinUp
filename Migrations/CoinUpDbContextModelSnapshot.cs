@@ -77,9 +77,6 @@ namespace Coin_up.Migrations
                     b.Property<decimal>("SaldoAtual")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("SaldoInicial")
-                        .HasColumnType("decimal(18, 2)");
-
                     b.Property<int>("TipoConta")
                         .HasColumnType("integer");
 
@@ -95,11 +92,9 @@ namespace Coin_up.Migrations
 
             modelBuilder.Entity("Quest", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int?>("CategoriaAlvo")
                         .HasColumnType("integer");
@@ -118,26 +113,17 @@ namespace Coin_up.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("Motivacao")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<int>("PontosDeExperiencia")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("ProgressoAtual")
-                        .HasColumnType("decimal(18, 2)");
+                    b.Property<int>("ProgressoAtual")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<int>("TipoDeObjetivo")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Titulo")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -218,7 +204,7 @@ namespace Coin_up.Migrations
                     b.HasOne("Coin_up.Entities.Usuario", "Usuario")
                         .WithMany("Transacoes")
                         .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Conta");

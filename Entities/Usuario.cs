@@ -22,6 +22,7 @@ namespace Coin_up.Entities
         public EnumSexo Sexo { get; set; }
         public int PontosDeExperiencia { get; set; } = 0;
         public EnumRank Rank { get; set; } = EnumRank.Nenhum;
+        public int Nivel { get; set; } = 0;
         public virtual ICollection<Conta> Contas { get; set; } = new List<Conta>();
         public virtual ICollection<Quest> Quests { get; set; } = new List<Quest>();
         public virtual ICollection<Transacao> Transacoes { get; set; } = new List<Transacao>();

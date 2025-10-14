@@ -19,34 +19,58 @@ namespace Coin_up.Data
             // --- Configurações da Entidade Usuario ---
             modelBuilder.Entity<Usuario>(entity =>
             {
+                // Garante que não haverá dois usuários com o mesmo Firebase Uid
                 entity.HasIndex(u => u.FirebaseUid).IsUnique();
 
+                // Relação: UM Usuário tem MUITAS Contas
                 entity.HasMany(u => u.Contas)
-              .WithOne(c => c.Usuario)
-              .HasForeignKey(c => c.UserId)
-              .OnDelete(DeleteBehavior.Cascade);
+                      .WithOne(c => c.Usuario)
+                      .HasForeignKey(c => c.UserId)
+                      .OnDelete(DeleteBehavior.Cascade); // Apagar usuário apaga suas contas
 
                 // Relação: UM Usuário tem MUITAS Quests
                 entity.HasMany(u => u.Quests)
                       .WithOne(q => q.Usuario)
                       .HasForeignKey(q => q.UserId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                      .OnDelete(DeleteBehavior.Cascade); // Apagar usuário apaga suas quests
 
                 // Relação: UM Usuário tem MUITAS Transações
                 entity.HasMany(u => u.Transacoes)
                       .WithOne(t => t.Usuario)
                       .HasForeignKey(t => t.UsuarioId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                      // CORREÇÃO CRÍTICA: Alterado para Restrict para evitar conflito de cascade path
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             // --- Configurações da Entidade Conta ---
             modelBuilder.Entity<Conta>(entity =>
             {
+                // MELHORIA: Define a precisão para campos monetários
+                entity.Property(c => c.SaldoAtual)
+                      .HasColumnType("decimal(18, 2)");
+
                 // Relação: UMA Conta tem MUITAS Transações
                 entity.HasMany(c => c.Transacoes)
                       .WithOne(t => t.Conta)
                       .HasForeignKey(t => t.ContaId)
+                      // CORRETO: Impede que uma conta com histórico seja apagada
                       .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // --- Configurações da Entidade Transacao ---
+            modelBuilder.Entity<Transacao>(entity =>
+            {
+                // MELHORIA: Define a precisão para campos monetários
+                entity.Property(t => t.Valor)
+                      .HasColumnType("decimal(18, 2)");
+            });
+
+            // --- Configurações da Entidade Quest ---
+            modelBuilder.Entity<Quest>(entity =>
+            {
+                // MELHORIA: Define a precisão para campos monetários
+                entity.Property(q => q.ValorAlvo)
+                      .HasColumnType("decimal(18, 2)");
             });
         }
     }

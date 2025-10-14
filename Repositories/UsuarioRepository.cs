@@ -17,5 +17,20 @@ namespace Coin_up.Repositories
         {
             return await _dbContext.Usuarios.AnyAsync(a => a.FirebaseUid == firebaseUid);
         }
+
+        public async Task<Guid> GetUsuarioIdByFirebaseUidAsync(string firebaseUid)
+        {
+            return await _dbContext.Usuarios
+                .Where(u => u.FirebaseUid == firebaseUid)
+                .Select(u => u.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Usuario> GetUsuarioByUsuarioIdAsync(Guid id)
+        {
+            return await _dbContext.Usuarios
+                .Where(u => u.Id == id)
+                .FirstOrDefaultAsync();
+        }
     }
 }
