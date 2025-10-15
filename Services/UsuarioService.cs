@@ -14,14 +14,12 @@ namespace Coin_up.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<UsuarioOutputDto> CreateUsuarioAsync(string firebaseUid, string email, UsuarioCadastroInputDto input)
+        public async Task<UsuarioOutputDto> CreateUsuarioAsync(UsuarioCadastroInputDto input)
         {
             var novoUsuario = new Usuario
             {
-                FirebaseUid = firebaseUid,
-                Email = email,
-
-                // --- VALORES VINDOS DO DTO (FORNECIDOS PELO USUÁRIO) ---
+                FirebaseUid = input.FirebaseUid,
+                Email = input.Email,
                 Nome = input.Nome,
                 Sexo = input.Sexo,
                 Telefone = input.Telefone,

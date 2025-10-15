@@ -32,14 +32,14 @@ namespace Coin_up.Controllers
         }
 
         [HttpGet]
-        [Route("buscar-conta")]
+        [Route("tela-home")]
         public async Task<IActionResult> GetContaByUserId()
         {
             var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userId = await _usuarioRepository.GetUsuarioIdByFirebaseUidAsync(firebaseUid);
-            var conta = await _contaService.GetContaAndTransacoesAsync(userId);
+            var tudo = await _contaService.GetContaAndTransacoesAsync(userId);
 
-            return Ok(conta);
+            return Ok(tudo);
         }
 
         [HttpPut]
