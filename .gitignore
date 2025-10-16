@@ -11,6 +11,9 @@
 *.userosscache
 *.sln.docstates
 
+# Arquivos de configuração e segredos locais
+coinup-723000-firebase-adminsdk-fbsvc-3176fe74be.json
+
 # Outros
 *.DS_Store
 Thumbs.db

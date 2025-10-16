@@ -19,7 +19,6 @@ namespace Coin_up.Services
             var novoUsuario = new Usuario
             {
                 Id = Guid.NewGuid(),
-                FirebaseUid = input.FirebaseUid,
                 Email = input.Email,
                 Nome = input.Nome,
                 Sexo = input.Sexo,

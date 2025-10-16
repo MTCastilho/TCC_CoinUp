@@ -13,14 +13,14 @@ public class Conta
 
     [Required]
     [MaxLength(100)]
-    public string Nome { get; set; }
+    public string Nome { get; set; } = "Carteira";
 
     [Required]
     [Column(TypeName = "decimal(18, 2)")]
-    public decimal SaldoAtual { get; set; }
+    public decimal SaldoAtual { get; set; } = decimal.Zero;
 
     [Required]
-    public EnumTipoConta TipoConta { get; set; }
+    public EnumTipoConta TipoConta { get; set; } = EnumTipoConta.Carteira;
 
     [ForeignKey("UserId")]
     public virtual Usuario Usuario { get; set; }

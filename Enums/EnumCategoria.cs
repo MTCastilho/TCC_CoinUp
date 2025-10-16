@@ -11,21 +11,26 @@ namespace Coin_up.Enums
         [Display(Name = "Salário")]
         Salario = 1,
 
+        [Display(Name = "Pix")]
+        Pix = 2,
+
         // --- DESPESAS ESSENCIAIS ---
         [Display(Name = "Moradia")]
-        Moradia = 2,
+        Moradia = 3,
 
         [Display(Name = "Alimentação")]
-        Alimentacao = 3,
+        Alimentacao = 4,
 
         [Display(Name = "Transporte")]
-        Transporte = 4,
+        Transporte = 5,
 
         [Display(Name = "Saúde")]
-        Saude = 5,
+        Saude = 6,
 
         // --- DESPESAS PESSOAIS E LAZER ---
         [Display(Name = "Lazer e Hobbies")]
-        Lazer = 6,
+        Lazer = 7,
+
+        
     }
 }

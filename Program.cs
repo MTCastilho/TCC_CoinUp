@@ -1,14 +1,18 @@
 using Coin_up.Data;
 using Coin_up.Repositories;
 using Coin_up.Services;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 string firebaseProjectId = builder.Configuration["FireBase:LocalId"];
 string connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+GoogleCredential credential;
 
 // Add services to the container
 builder.Services.AddDbContext<CoinUpDbContext>(options =>
@@ -84,6 +88,37 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
+});
+
+if (builder.Environment.IsDevelopment())
+{
+    var credentialPath = builder.Configuration["FireBase:FirebaseCredentialsPath"];
+    if (string.IsNullOrEmpty(credentialPath))
+    {
+        throw new ArgumentNullException(nameof(credentialPath), "O caminho para as credenciais do Firebase (FirebaseCredentialsPath) não foi encontrado na configuração de desenvolvimento.");
+    }
+
+    // Carrega a credencial a partir do arquivo
+    credential = GoogleCredential.FromFile(credentialPath);
+}
+else
+{
+    var firebaseConfigSection = builder.Configuration.GetSection("FirebaseCredentials");
+    if (!firebaseConfigSection.Exists())
+    {
+        throw new InvalidOperationException("A configuração 'FirebaseCredentials' não foi encontrada. Certifique-se de que a variável de ambiente está configurada corretamente em produção.");
+    }
+
+    // Converte a seção de configuração de volta para uma string JSON
+    var firebaseConfigJson = JsonSerializer.Serialize(firebaseConfigSection.Get<object>());
+
+    // Carrega a credencial a partir da string JSON
+    credential = GoogleCredential.FromJson(firebaseConfigJson);
+}
+
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = credential,
 });
 
 var app = builder.Build();
