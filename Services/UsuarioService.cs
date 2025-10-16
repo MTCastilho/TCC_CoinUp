@@ -18,6 +18,7 @@ namespace Coin_up.Services
         {
             var novoUsuario = new Usuario
             {
+                Id = Guid.NewGuid(),
                 FirebaseUid = input.FirebaseUid,
                 Email = input.Email,
                 Nome = input.Nome,
@@ -25,8 +26,17 @@ namespace Coin_up.Services
                 Telefone = input.Telefone,
             };
 
+            var novaConta = new Conta
+            {
+                UserId = novoUsuario.Id,
+                Nome = "Carteira",
+                TipoConta = Enums.EnumTipoConta.Carteira,
+                SaldoAtual = 0
+            };
+
             // ETAPA 3: Persistência (Salvar no banco)
             await _unitOfWork.Usuario.AddAsync(novoUsuario);
+            await _unitOfWork.Conta.AddAsync(novaConta);
             await _unitOfWork.CompleteAsync();
 
             // ETAPA 4: Retorno (Mapear para um DTO de resposta)
