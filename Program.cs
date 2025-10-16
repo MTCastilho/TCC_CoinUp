@@ -6,7 +6,6 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -103,14 +102,11 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    var firebaseConfigSection = builder.Configuration.GetSection("FirebaseCredentials");
-    if (!firebaseConfigSection.Exists())
+    var firebaseConfigJson = builder.Configuration["FirebaseCredentials"];
+    if (string.IsNullOrEmpty(firebaseConfigJson))
     {
-        throw new InvalidOperationException("A configuração 'FirebaseCredentials' não foi encontrada. Certifique-se de que a variável de ambiente está configurada corretamente em produção.");
+        throw new InvalidOperationException("A configuração 'FirebaseCredentials' não foi encontrada ou está vazia. Certifique-se de que a variável de ambiente está configurada corretamente.");
     }
-
-    // Converte a seção de configuração de volta para uma string JSON
-    var firebaseConfigJson = JsonSerializer.Serialize(firebaseConfigSection.Get<object>());
 
     // Carrega a credencial a partir da string JSON
     credential = GoogleCredential.FromJson(firebaseConfigJson);
