@@ -1,4 +1,5 @@
 ﻿using Coin_up.Data;
+using Coin_up.Dtos;
 using Coin_up.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,6 +54,29 @@ namespace Coin_up.Repositories
                 .SumAsync(e => (decimal?)e.Valor);
 
             return total ?? 0;
+        }
+
+        public async Task<List<HistoricoTransacaoDto>> GetTransacaoListAsync(Guid userId)
+        {
+            return await _dbContext.Transacoes
+                .Where(e => e.UsuarioId == userId)
+                .OrderByDescending(a => a.Data)
+                .GroupBy(t => t.Data)
+                .Select(g => new HistoricoTransacaoDto
+                {
+                    Data = g.Key,
+                    Transacoes = g.Select(t => new TransacaoDto
+                    {
+                        Id = t.Id,
+                        TipoTransacao = t.TipoTransacao,
+                        Categoria = t.Categoria,
+                        Descricao = t.Descricao,
+                        Valor = t.Valor,
+                        Data = t.Data
+                    })
+                    .ToList()
+                })
+                .ToListAsync();
         }
     }
 }
