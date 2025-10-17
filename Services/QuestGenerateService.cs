@@ -16,14 +16,14 @@ namespace Coin_up.Services
         {
             _configuration = configuration;
             _httpClient = httpClientFactory.CreateClient();
-            _apiKey = _configuration["GoogleAI:ApiKey"];
-            if (string.IsNullOrWhiteSpace(_apiKey))
-            {
-                throw new ArgumentNullException(nameof(_apiKey), "A ApiKey do Google AI não foi encontrada na configuração.");
-            }
+            //_apiKey = _configuration["GoogleAI:ApiKey"];
+            //if (string.IsNullOrWhiteSpace(_apiKey))
+            //{
+            //    throw new ArgumentNullException(nameof(_apiKey), "A ApiKey do Google AI não foi encontrada na configuração.");
+            //}
 
-            _geminiApiUrl = $"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={_apiKey}";
-            _logger = logger;
+            //_geminiApiUrl = $"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={_apiKey}";
+            //_logger = logger;
         }
 
         public class GeminiRequest

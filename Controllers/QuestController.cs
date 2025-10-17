@@ -4,6 +4,7 @@ using Coin_up.Repositories;
 using Coin_up.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace Coin_up.Controllers
@@ -67,5 +68,12 @@ namespace Coin_up.Controllers
 
             return Ok(list);
         }
+
+        //[HttpDelete("deletar")]
+        //public async Task<IActionResult> RemoveQuestAsync([FromQuery]Guid questId)
+        //{
+        //    var quest = await _unitOfWork.Quest.GetByIdAsync(questId);
+        //    await _unitOfWork.Quest.Delete(quest);
+        //}
     }
 }
