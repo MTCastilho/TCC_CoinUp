@@ -90,6 +90,7 @@ namespace Coin_up.Services
                             // Se o total gasto ultrapassou o alvo, a quest falhou
                             if (totalGasto > quest.ValorAlvo)
                             {
+                                quest.ValorAtual = novaTransacao.Valor;
                                 quest.Status = EnumQuestStatus.Falhou;
                             }
                         }

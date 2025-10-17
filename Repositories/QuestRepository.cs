@@ -25,7 +25,7 @@ namespace Coin_up.Repositories
             return await _dbContext.Quests
                 .Where(q => q.UserId == userId)
                 .Where(q => q.Status == EnumQuestStatus.Ativa)
-                .Take(3).ToListAsync();
+                .Take(4).ToListAsync();
         }
 
         public async Task<List<Quest>> GetQuestsByStatusAsync(Guid userid, EnumQuestStatus status)
