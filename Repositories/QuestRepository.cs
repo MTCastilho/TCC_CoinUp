@@ -35,5 +35,14 @@ namespace Coin_up.Repositories
                 .Where(q => q.Status == status)
                 .ToListAsync();
         }
+
+        public async Task DeleteByIdAsync(Guid id)
+        {
+            var questToDelete = await _dbContext.Quests
+                .Where(q => q.Id == id)
+                .FirstOrDefaultAsync();
+
+            _dbContext.Quests.Remove(questToDelete);
+        }
     }
 }

@@ -69,11 +69,16 @@ namespace Coin_up.Controllers
             return Ok(list);
         }
 
-        //[HttpDelete("deletar")]
-        //public async Task<IActionResult> RemoveQuestAsync([FromQuery]Guid questId)
-        //{
-        //    var quest = await _unitOfWork.Quest.GetByIdAsync(questId);
-        //    await _unitOfWork.Quest.Delete(quest);
-        //}
+        [HttpDelete("deletar")]
+        public async Task<IActionResult> RemoveQuestAsync([FromQuery] Guid questId)
+        {
+            await _unitOfWork.Quest.DeleteByIdAsync(questId);
+
+            return Ok(new
+            {
+                Code = StatusCodes.Status200OK,
+                Mensage = "Deletado com sucesso"
+            });
+        }
     }
 }

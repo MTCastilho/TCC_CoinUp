@@ -7,6 +7,7 @@ namespace Coin_up.Repositories
         Task<IEnumerable<Quest>> GetActiveQuestsByUserIdAsync(Guid userId);
         Task<IEnumerable<Quest>> Get3ActiveQuestsByUserIdAsync(Guid userId);
         Task<List<Quest>> GetQuestsByStatusAsync(Guid userid, EnumQuestStatus status);
+        Task DeleteByIdAsync(Guid id);
 
     }
 }

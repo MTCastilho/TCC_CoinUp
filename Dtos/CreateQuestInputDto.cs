@@ -10,7 +10,6 @@ namespace Coin_up.Dtos
         [Required]
         public EnumQuestObjectiveType TipoDeObjetivo { get; set; }
 
-        // NOVO: Adicionado para o usuário escolher a duração
         [Required]
         public EnumQuestDuration Duracao { get; set; }
 
