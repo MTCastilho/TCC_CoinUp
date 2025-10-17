@@ -3,6 +3,7 @@ using System;
 using Coin_up.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Coin_up.Migrations
 {
     [DbContext(typeof(CoinUpDbContext))]
-    partial class CoinUpDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251017023910_AddDescricaoTransacao")]
+    partial class AddDescricaoTransacao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,6 +160,7 @@ namespace Coin_up.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Descricao")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("TipoTransacao")

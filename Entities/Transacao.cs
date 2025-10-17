@@ -20,6 +20,8 @@ public class Transacao
     [Required]
     public EnumCategoria Categoria { get; set; }
 
+    public string? Descricao { get; set; }
+
     [Required]
     [Column(TypeName = "decimal(18, 2)")]
     public decimal Valor { get; set; }

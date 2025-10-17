@@ -7,5 +7,6 @@ namespace Coin_up.Dtos
         public EnumTipoTransacao TipoTransacao { get; set; }
         public EnumCategoria Categoria { get; set; }
         public decimal Valor { get; set; }
+        public string? Descricao { get; set; }
     }
 }
