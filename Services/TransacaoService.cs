@@ -116,6 +116,22 @@ namespace Coin_up.Services
                             // Se o usuário gastou na categoria proibida, a quest falhou instantaneamente
                             quest.Status = EnumQuestStatus.Falhou;
                         }
+                        else if (quest.Status == EnumQuestStatus.Ativa && quest.DataDeExpiracao.HasValue)
+                        {
+                            // Garante que a lógica de progresso só se aplique a missões que ainda estão ativas.
+
+                            // Calcula a duração total que a missão deve durar.
+                            var duracaoTotal = (quest.DataDeExpiracao.Value - quest.DataDeCriacao).TotalDays;
+
+                            if (duracaoTotal > 0)
+                            {
+                                // Calcula quantos dias já se passaram com sucesso.
+                                var duracaoDecorrida = (DateTime.UtcNow - quest.DataDeCriacao).TotalDays;
+
+                                // Atualiza a barra de progresso para refletir a porcentagem do tempo concluído.
+                                quest.ProgressoAtual = (int)Math.Clamp((duracaoDecorrida / duracaoTotal) * 100, 0, 100);
+                            }
+                        }
                         break;
 
                     // "Economize R$ 100 no total do mês"

@@ -61,7 +61,7 @@ namespace Coin_up.Repositories
             return await _dbContext.Transacoes
                 .Where(e => e.UsuarioId == userId)
                 .OrderByDescending(a => a.Data)
-                .GroupBy(t => t.Data)
+                .GroupBy(t => t.Data.Date)
                 .Select(g => new HistoricoTransacaoDto
                 {
                     Data = g.Key,
