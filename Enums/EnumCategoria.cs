@@ -14,6 +14,12 @@ namespace Coin_up.Enums
         [Display(Name = "Pix")]
         Pix = 2,
 
+        [Display(Name = "Cheque")]
+        Cheque = 8,
+
+        [Display(Name = "Dinheiro")]
+        Dinheiro = 9,
+
         // --- DESPESAS ESSENCIAIS ---
         [Display(Name = "Moradia")]
         Moradia = 3,
