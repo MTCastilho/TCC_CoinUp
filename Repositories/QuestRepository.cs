@@ -30,10 +30,22 @@ namespace Coin_up.Repositories
 
         public async Task<List<Quest>> GetQuestsByStatusAsync(Guid userid, EnumQuestStatus status)
         {
+            EnumQuestStatus statusInfo;
+
+            if(status == null)
+            {
+                return await _dbContext.Quests
+                    .Where(q => q.UserId == userid)
+                    .Where(q => q.Status == EnumQuestStatus.Ativa)
+                    .OrderBy(q => q.DataDeCriacao)
+                    .ToListAsync();
+            }
+
             return await _dbContext.Quests
-                .Where(q => q.UserId == userid)
-                .Where(q => q.Status == status)
-                .ToListAsync();
+                    .Where(q => q.UserId == userid)
+                    .Where(q => q.Status == status)
+                    .OrderBy(q => q.DataDeCriacao)
+                    .ToListAsync();
         }
 
         public async Task DeleteByIdAsync(Guid id)
