@@ -81,7 +81,7 @@ namespace Coin_up.Services
                         if (novaTransacao.TipoTransacao == EnumTipoTransacao.Despesa && quest.CategoriaAlvo == novaTransacao.Categoria)
                         {
                             // Busca o total já gasto na categoria desde que a quest começou
-                            var totalGasto = await _unitOfWork.Transacao.GetDespesaTotalComDataAsync(userId, novaTransacao.Data);
+                            var totalGasto = await _unitOfWork.Transacao.GetDespesaTotalComDataAsync(userId, quest.DataDeCriacao);
 
                             // Atualiza o progresso (quanto do limite já foi gasto)
                             quest.ProgressoAtual = (int)((totalGasto / quest.ValorAlvo) * 100);
@@ -90,6 +90,21 @@ namespace Coin_up.Services
                             if (totalGasto > quest.ValorAlvo)
                             {
                                 quest.Status = EnumQuestStatus.Falhou;
+                            }
+                        }
+
+                        if (quest.DataDeExpiracao.HasValue)
+                        {
+                            // Calcula a duração total da missão em dias.
+                            var duracaoTotal = (quest.DataDeExpiracao.Value - quest.DataDeCriacao).TotalDays;
+
+                            if (duracaoTotal > 0)
+                            {
+                                // Calcula quantos dias se passaram desde o início.
+                                var duracaoDecorrida = (DateTime.UtcNow - quest.DataDeCriacao).TotalDays;
+
+                                // O progresso é a porcentagem do tempo que o usuário "sobreviveu".
+                                quest.ProgressoAtual = (int)Math.Clamp((duracaoDecorrida / duracaoTotal) * 100, 0, 100);
                             }
                         }
                         break;

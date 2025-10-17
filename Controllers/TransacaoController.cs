@@ -40,7 +40,7 @@ namespace Coin_up.Controllers
             return BadRequest("Houve um problema durante a comunicação, tente novamente mais tearde.");
         }
 
-        [HttpGet("litar-transacao")]
+        [HttpGet("listar-transacao")]
         public async Task<IActionResult> GetTransacoesListGroupedAsync()
         {
             var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier);
