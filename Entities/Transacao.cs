@@ -20,6 +20,7 @@ public class Transacao
     [Required]
     public EnumCategoria Categoria { get; set; }
 
+    [MaxLength(50)]
     public string? Descricao { get; set; }
 
     [Required]

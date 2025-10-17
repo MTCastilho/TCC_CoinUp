@@ -30,6 +30,9 @@ public class Quest
     [Column(TypeName = "decimal(18, 2)")]
     public decimal ValorAlvo { get; set; }
 
+    [Column(TypeName = "decimal(18, 2)")]
+    public decimal ValorAtual { get; set; }
+
     public int ProgressoAtual { get; set; } = 0;
 
     public int PontosDeExperiencia { get; set; }

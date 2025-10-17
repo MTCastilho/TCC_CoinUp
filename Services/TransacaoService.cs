@@ -27,7 +27,8 @@ namespace Coin_up.Services
                 TipoTransacao = input.TipoTransacao,
                 Categoria = input.Categoria,
                 Valor = input.Valor,
-                Descricao = input.Descricao
+                Descricao = input.Descricao,
+                Data = input.Data,
             };
 
             switch (input.TipoTransacao)
