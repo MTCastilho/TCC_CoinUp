@@ -76,6 +76,7 @@ namespace Coin_up.Repositories
                 //    })
                 //    .ToList()
                 //})
+                //coisa coisa coisa
                 .ToListAsync();
         }
     }
