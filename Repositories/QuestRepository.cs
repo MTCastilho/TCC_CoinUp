@@ -25,6 +25,7 @@ namespace Coin_up.Repositories
             return await _dbContext.Quests
                 .Where(q => q.UserId == userId)
                 .Where(q => q.Status == EnumQuestStatus.Ativa)
+                .OrderBy(q => q.DataDeCriacao)
                 .Take(4).ToListAsync();
         }
 
