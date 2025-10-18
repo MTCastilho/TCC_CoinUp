@@ -243,6 +243,17 @@ namespace Coin_up.Services
                 var sobra = 1000 - usuario.PontosDeExperiencia;
                 usuario.Nivel = sobra;
             }
+
+            if (usuario.Nivel == 5
+                || usuario.Nivel == 10
+                || usuario.Nivel == 15
+                || usuario.Nivel == 20
+                || usuario.Nivel == 25
+                || usuario.Nivel == 30
+                || usuario.Nivel == 35)
+            {
+                usuario.Rank++;
+            }
         }
     }
 }
