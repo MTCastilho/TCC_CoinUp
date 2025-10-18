@@ -54,6 +54,53 @@ namespace Coin_up.Services
             return true;
         }
 
+        public async Task VerificaQuestAsync(Guid userId)
+        {
+            var usuario = await _unitOfWork.Usuario.GetUsuarioByUsuarioIdAsync(userId);
+            var conta = await _unitOfWork.Conta.GetContaByUserIdAsync(userId);
+
+            // Se o usuário ou a conta não existem, não há o que fazer.
+            if (usuario == null || conta == null) return;
+
+            // 2. Busca todas as quests que ainda estão 'Ativas'
+            var questsAtivas = await _unitOfWork.Quest.GetActiveQuestsByUserIdAsync(userId);
+            if (!questsAtivas.Any()) return;
+
+            // Pega a data/hora atual UMA VEZ para consistência
+            var dataVerificacao = DateTime.UtcNow;
+
+            foreach (var quest in questsAtivas)
+            {
+                // 3. VERIFICAÇÃO DE EXPIRAÇÃO (Lógica proativa baseada no tempo)
+                // Esta é a primeira coisa a verificar.
+                if (quest.DataDeExpiracao.HasValue && quest.DataDeExpiracao.Value < dataVerificacao)
+                {
+                    var duracaoTotal = (quest.DataDeExpiracao.Value - quest.DataDeCriacao).TotalDays;
+                    var duracaoDecorrida = (DateTime.UtcNow - quest.DataDeCriacao).TotalDays;
+
+                    // O progresso é a porcentagem do tempo que o usuário "sobreviveu".
+                    quest.ProgressoAtual = (int)Math.Clamp((duracaoDecorrida / duracaoTotal) * 100, 0, 100);
+
+                    // A quest expirou. Verificamos se foi concluída a tempo.
+                    if (quest.ProgressoAtual >= 100)
+                    {
+                        quest.Status = EnumQuestStatus.Concluida;
+                        // Garante que a data de conclusão não seja posterior à data de expiração
+                        if (quest.DataDeConclusao == null || quest.DataDeConclusao.Value > quest.DataDeExpiracao.Value)
+                        {
+                            quest.DataDeConclusao = quest.DataDeExpiracao.Value;
+                            VerificarLevelUpUsuario(usuario, quest);
+                            continue; // Pula para a próxima quest pois esta já foi finalizada.
+                        }
+                    }
+
+                    continue; // Pula para a próxima quest.
+                }
+            }
+
+            await _unitOfWork.CompleteAsync();
+        }
+
         private async Task AtualizarQuestsAposTransacao(Transacao novaTransacao, Guid userId, Conta conta, Usuario usuario)
         {
 
@@ -68,12 +115,15 @@ namespace Coin_up.Services
                 // Verifica se a quest já expirou
                 if (quest.DataDeExpiracao.HasValue && quest.DataDeExpiracao.Value < DateTime.UtcNow)
                 {
-                    quest.Status = EnumQuestStatus.Expirada;
+                    quest.Status = EnumQuestStatus.Concluida;
+                    quest.DataDeConclusao = DateTime.UtcNow;
+
+                    VerificarLevelUpUsuario(usuario, quest);
                     continue; // Pula para a próxima quest
                 }
 
                 bool questFoiConcluida = false;
-                    
+
                 // Aplica a lógica de acordo com o tipo de objetivo da quest
                 switch (quest.TipoDeObjetivo)
                 {
@@ -83,14 +133,18 @@ namespace Coin_up.Services
                         {
                             // Busca o total já gasto na categoria desde que a quest começou
                             var totalGasto = await _unitOfWork.Transacao.GetDespesaTotalComDataAsync(userId, quest.DataDeCriacao);
+                            quest.ValorAtual = novaTransacao.Valor;
 
-                            // Atualiza o progresso (quanto do limite já foi gasto)
-                            quest.ProgressoAtual = (int)((totalGasto / quest.ValorAlvo) * 100);
+                            // Calcula quantos dias se passaram desde o início.
+                            var duracaoTotal = (quest.DataDeExpiracao.Value - quest.DataDeCriacao).TotalDays;
+                            var duracaoDecorrida = (DateTime.UtcNow - quest.DataDeCriacao).TotalDays;
+
+                            // O progresso é a porcentagem do tempo que o usuário "sobreviveu".
+                            quest.ProgressoAtual = (int)Math.Clamp((duracaoDecorrida / duracaoTotal) * 100, 0, 100);
 
                             // Se o total gasto ultrapassou o alvo, a quest falhou
                             if (totalGasto > quest.ValorAlvo)
                             {
-                                quest.ValorAtual = novaTransacao.Valor;
                                 quest.Status = EnumQuestStatus.Falhou;
                             }
                         }
@@ -157,55 +211,38 @@ namespace Coin_up.Services
                         {
                             quest.Status = EnumQuestStatus.Falhou;
                         }
+
+                        if (quest.Status == EnumQuestStatus.Ativa && quest.DataDeExpiracao.HasValue)
+                        {
+                            // Garante que a lógica de progresso só se aplique a missões que ainda estão ativas.
+
+                            // Calcula a duração total que a missão deve durar.
+                            var duracaoTotal = (quest.DataDeExpiracao.Value - quest.DataDeCriacao).TotalDays;
+
+                            if (duracaoTotal > 0)
+                            {
+                                // Calcula quantos dias já se passaram com sucesso.
+                                var duracaoDecorrida = (DateTime.UtcNow - quest.DataDeCriacao).TotalDays;
+
+                                // Atualiza a barra de progresso para refletir a porcentagem do tempo concluído.
+                                quest.ProgressoAtual = (int)Math.Clamp((duracaoDecorrida / duracaoTotal) * 100, 0, 100);
+                            }
+                        }
                         break;
                 }
-
-                // Após atualizar o progresso, verifica se a quest foi concluída
-                if (quest.ProgressoAtual >= 100 && quest.Status == EnumQuestStatus.Ativa)
-                {
-                    quest.Status = EnumQuestStatus.Concluida;
-                    quest.DataDeConclusao = DateTime.UtcNow;
-
-                    // Adiciona a experiência ao usuário!
-                    usuario.PontosDeExperiencia += quest.PontosDeExperiencia;
-                }
             }
-
-            // Após processar todas as quests, verifica se o usuário subiu de nível
-            VerificarLevelUpUsuario(usuario);
         }
 
-        // Em seu TransacaoService.cs, adicione este método privado
-        private void VerificarLevelUpUsuario(Usuario usuario)
+        private void VerificarLevelUpUsuario(Usuario usuario, Quest quest)
         {
-            // Supondo que você tenha a classe estática GerenciadorDeNivel que criamos antes
-            int xpParaProximoNivel = CalcularXpParaProximoNivel(usuario.Nivel); // Supondo que 'Nivel' seja uma prop em Usuario
+            usuario.PontosDeExperiencia += quest.PontosDeExperiencia;
 
-            while (usuario.PontosDeExperiencia >= xpParaProximoNivel)
+            if (usuario.PontosDeExperiencia >= 1000)
             {
-                // Sobe de nível
                 usuario.Nivel++;
-                // Subtrai o XP usado
-                usuario.PontosDeExperiencia -= xpParaProximoNivel;
-
-                // Recalcula o XP para o *próximo* nível
-                xpParaProximoNivel = CalcularXpParaProximoNivel(usuario.Nivel);
+                var sobra = 1000 - usuario.PontosDeExperiencia;
+                usuario.Nivel = sobra;
             }
-        }
-
-        private const double XP_BASE = 100;
-        private const double FATOR_DE_PROGRESSAO = 1.5;
-
-        public static int CalcularXpParaProximoNivel(int nivelAtual)
-        {
-            if (nivelAtual <= 0)
-            {
-                return (int)XP_BASE;
-            }
-
-            double xpNecessario = XP_BASE * Math.Pow(nivelAtual, FATOR_DE_PROGRESSAO);
-
-            return (int)Math.Floor(xpNecessario);
         }
     }
 }

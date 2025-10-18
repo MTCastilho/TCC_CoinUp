@@ -9,12 +9,14 @@ namespace Coin_up.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IQuestRepository _questRepository;
+        private readonly ITransacaoService _transacaoService;
 
-        public ContaService(IUnitOfWork unitOfWork, IMapper mapper, IQuestRepository questRepository)
+        public ContaService(IUnitOfWork unitOfWork, IMapper mapper, IQuestRepository questRepository, ITransacaoService transacaoService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _questRepository = questRepository;
+            _transacaoService = transacaoService;
         }
 
         public async Task<ContaOutputDto> CreatContaAsync(Guid userId, ContaInputDto input)
@@ -56,6 +58,7 @@ namespace Coin_up.Services
             var despesa = await _unitOfWork.Transacao.GetDespesaTotalAsync(userId);
             var receita = await _unitOfWork.Transacao.GetReceitaTotalAsync(userId);
             var quest = await _questRepository.Get3ActiveQuestsByUserIdAsync(userId);
+            await _transacaoService.VerificaQuestAsync(userId);
 
             var contaOutput = _mapper.Map<Conta, ContaOutputDto>(conta);
 

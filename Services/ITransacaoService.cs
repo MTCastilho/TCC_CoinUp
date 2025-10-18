@@ -6,5 +6,7 @@ namespace Coin_up.Services
     {
         Task<bool> CreateTransacaoAsync(Guid userId, TransacaoInputDto input);
 
+        Task VerificaQuestAsync(Guid userId);
+
     }
 }

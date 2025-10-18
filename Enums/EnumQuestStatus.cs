@@ -4,7 +4,6 @@
     {
         Ativa = 0,
         Concluida = 1,
-        Falhou = 2,
-        Expirada = 3
+        Falhou = 2
     }
 }
