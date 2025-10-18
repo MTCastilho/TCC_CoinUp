@@ -58,12 +58,13 @@ namespace Coin_up.Services
         {
             var usuario = await _unitOfWork.Usuario.GetUsuarioByUsuarioIdAsync(userId);
             var conta = await _unitOfWork.Conta.GetContaByUserIdAsync(userId);
-
+            
             // Se o usuário ou a conta não existem, não há o que fazer.
             if (usuario == null || conta == null) return;
 
             // 2. Busca todas as quests que ainda estão 'Ativas'
             var questsAtivas = await _unitOfWork.Quest.GetActiveQuestsByUserIdAsync(userId);
+
             if (!questsAtivas.Any()) return;
 
             // Pega a data/hora atual UMA VEZ para consistência
@@ -71,33 +72,26 @@ namespace Coin_up.Services
 
             foreach (var quest in questsAtivas)
             {
-                // 3. VERIFICAÇÃO DE EXPIRAÇÃO (Lógica proativa baseada no tempo)
-                // Esta é a primeira coisa a verificar.
-                if (quest.DataDeExpiracao.HasValue && quest.DataDeExpiracao.Value < dataVerificacao)
+                var duracaoTotal = (quest.DataDeExpiracao.Value - quest.DataDeCriacao).TotalDays;
+                var duracaoDecorrida = (dataVerificacao - quest.DataDeCriacao).TotalDays;
+
+                quest.ProgressoAtual = (int)Math.Clamp((duracaoDecorrida / duracaoTotal) * 100, 0, 100);
+
+
+                if (dataVerificacao >= quest.DataDeExpiracao.Value)
                 {
-                    var duracaoTotal = (quest.DataDeExpiracao.Value - quest.DataDeCriacao).TotalDays;
-                    var duracaoDecorrida = (DateTime.UtcNow - quest.DataDeCriacao).TotalDays;
 
-                    // O progresso é a porcentagem do tempo que o usuário "sobreviveu".
-                    quest.ProgressoAtual = (int)Math.Clamp((duracaoDecorrida / duracaoTotal) * 100, 0, 100);
+                    quest.Status = EnumQuestStatus.Concluida;
 
-                    // A quest expirou. Verificamos se foi concluída a tempo.
-                    if (quest.ProgressoAtual >= 100)
+                    if (quest.DataDeConclusao == null)
                     {
-                        quest.Status = EnumQuestStatus.Concluida;
-                        // Garante que a data de conclusão não seja posterior à data de expiração
-                        if (quest.DataDeConclusao == null || quest.DataDeConclusao.Value > quest.DataDeExpiracao.Value)
-                        {
-                            quest.DataDeConclusao = quest.DataDeExpiracao.Value;
-                            VerificarLevelUpUsuario(usuario, quest);
-                            continue; // Pula para a próxima quest pois esta já foi finalizada.
-                        }
+                        quest.DataDeConclusao = quest.DataDeExpiracao.Value;
+                        VerificarLevelUpUsuario(usuario, quest);
+                        _unitOfWork.Usuario.Update(usuario);
                     }
-
-                    continue; // Pula para a próxima quest.
                 }
+                _unitOfWork.Quest.Update(quest);
             }
-
             await _unitOfWork.CompleteAsync();
         }
 

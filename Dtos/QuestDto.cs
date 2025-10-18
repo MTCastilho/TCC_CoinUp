@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Coin_up.Dtos
 {
-    public class QuestDto
+    public class    QuestDto
     {
         public Guid Id { get; set; }
 
