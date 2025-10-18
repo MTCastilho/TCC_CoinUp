@@ -17,12 +17,14 @@ namespace Coin_up.Controllers
         private readonly IQuestService _questService;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITransacaoService _transacaoService;
 
-        public QuestController(IQuestService questService, IUsuarioRepository usuarioRepository, IUnitOfWork unitOfWork)
+        public QuestController(IQuestService questService, IUsuarioRepository usuarioRepository, IUnitOfWork unitOfWork, ITransacaoService transacaoService)
         {
             _questService = questService;
             _usuarioRepository = usuarioRepository;
             _unitOfWork = unitOfWork;
+            _transacaoService = transacaoService;
         }
 
         [HttpPost("criar-quest-ia")]
@@ -64,6 +66,8 @@ namespace Coin_up.Controllers
         {
             var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userId = await _usuarioRepository.GetUsuarioIdByFirebaseUidAsync(firebaseUid);
+            await _transacaoService.VerificaQuestAsync(userId);
+
             var list = await _unitOfWork.Quest.GetQuestsByStatusAsync(userId, status);
 
             return Ok(list);
