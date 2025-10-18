@@ -69,8 +69,22 @@ namespace Coin_up.Controllers
             await _transacaoService.VerificaQuestAsync(userId);
 
             var list = await _unitOfWork.Quest.GetQuestsByStatusAsync(userId, status);
+            var listDto = list.Select(quest => new QuestDto
+            {
+                Id = quest.Id,
+                Descricao = quest.Descricao,
+                ProgressoAtual = quest.ProgressoAtual,
+                Status = quest.Status, 
+                DataDeCriacao = quest.DataDeCriacao,
+                DataDeExpiracao = quest.DataDeExpiracao,
+                PontosDeExperiencia = quest.PontosDeExperiencia,
+                TipoDeObjetivo = quest.TipoDeObjetivo,
+                ValorAlvo = quest.ValorAlvo,
+                ValorAtual = quest.ValorAtual,
+                DataDeConclusao = quest.DataDeConclusao
+            }).ToList();
 
-            return Ok(list);
+            return Ok(listDto);
         }
 
         [HttpDelete("deletar")]
