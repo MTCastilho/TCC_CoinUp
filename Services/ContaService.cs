@@ -54,11 +54,11 @@ namespace Coin_up.Services
 
         public async Task<ContaTransacaoDto> GetContaAndTransacoesAsync(Guid userId)
         {
+            await _transacaoService.VerificaQuestAsync(userId);
             var conta = await _unitOfWork.Conta.GetContaByUserIdAsync(userId);
             var despesa = await _unitOfWork.Transacao.GetDespesaTotalAsync(userId);
             var receita = await _unitOfWork.Transacao.GetReceitaTotalAsync(userId);
             var quest = await _questRepository.Get3ActiveQuestsByUserIdAsync(userId);
-            await _transacaoService.VerificaQuestAsync(userId);
 
             var contaOutput = _mapper.Map<Conta, ContaOutputDto>(conta);
 
