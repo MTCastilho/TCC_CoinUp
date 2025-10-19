@@ -1,7 +1,4 @@
 ﻿using Coin_up.Dtos;
-using Coin_up.Entities;
-using Coin_up.Repositories;
-using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Coin_up.Controllers
@@ -12,19 +9,17 @@ namespace Coin_up.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public AuthController(IConfiguration configuration, IHttpClientFactory httpClientFactory, IUnitOfWork unitOfWork)
+        public AuthController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
-            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("login")]
         public async Task<IActionResult> GetUsuarioFirebaseUidAsync(string email, string password)
         {
-            var firebaseApiKey = _configuration["FireBase:ApiKey"];
+            var firebaseApiKey = _configuration["FirebaseApiKey"];
 
             var googleApiUrl = $"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={firebaseApiKey}";
 

@@ -9,13 +9,20 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string firebaseProjectId = builder.Configuration["FireBase:LocalId"];
-string connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+string firebaseProjectId = builder.Configuration["FireBaseLocalId"];
+var credentialPath = builder.Configuration["FireBase:FirebaseCredentialsPath"];
+var firebaseConfigJson = builder.Configuration["FirebaseCredentials"];
+var dbHost = builder.Configuration["DbHost"];
+var databaseName = builder.Configuration["Database"];
+var dbPort = builder.Configuration["DbPort"];
+var dbUser = builder.Configuration["DbUser"];
+var dbPassword = builder.Configuration["DbPassword"];
+
 GoogleCredential credential;
 
 // Add services to the container
 builder.Services.AddDbContext<CoinUpDbContext>(options =>
-    options.UseNpgsql(connectionString)
+    options.UseNpgsql($"Host={dbHost};Port={dbPort};Database={databaseName};Username={dbUser};Password={dbPassword}")
 );
 
 builder.Services.AddControllers();
@@ -90,8 +97,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 if (builder.Environment.IsDevelopment())
-{
-    var credentialPath = builder.Configuration["FireBase:FirebaseCredentialsPath"];
+{ 
+
     if (string.IsNullOrEmpty(credentialPath))
     {
         throw new ArgumentNullException(nameof(credentialPath), "O caminho para as credenciais do Firebase (FirebaseCredentialsPath) não foi encontrado na configuração de desenvolvimento.");
@@ -102,7 +109,6 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    var firebaseConfigJson = builder.Configuration["FirebaseCredentials"];
     if (string.IsNullOrEmpty(firebaseConfigJson))
     {
         throw new InvalidOperationException("A configuração 'FirebaseCredentials' não foi encontrada ou está vazia. Certifique-se de que a variável de ambiente está configurada corretamente.");
