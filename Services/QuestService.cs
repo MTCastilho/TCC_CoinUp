@@ -96,22 +96,37 @@ namespace Coin_up.Services
             {
                 case EnumQuestObjectiveType.EconomizarValorTotal:
                     xpBase = 150;
-                    fatorDificuldade += (valorAlvo / 500m); // Mais a economizar = mais difícil
+                    fatorDificuldade += Math.Clamp(valorAlvo / 500m, 0.0m, 5.0m);
                     break;
+
                 case EnumQuestObjectiveType.LimitarGastoEmCategoria:
-                    xpBase = 100;
-                    if (valorAlvo > 0) fatorDificuldade += (1000m / valorAlvo); // Menor o limite = mais difícil
+                    if (valorAlvo <= 0)
+                    {
+                        xpBase = 200;
+                        fatorDificuldade = 1.5m;
+                    }
+                    else
+                    {
+                        xpBase = 100;
+
+                        decimal bonusDificuldade = 1000m / Math.Max(valorAlvo, 50m);
+                        fatorDificuldade += Math.Clamp(bonusDificuldade, 0.0m, 10.0m);
+                    }
                     break;
+
                 case EnumQuestObjectiveType.NaoGastarEmCategoria:
                     xpBase = 200;
-                    fatorDificuldade = 1.5m; // Dificuldade binária (conseguiu ou não)
+                    fatorDificuldade = 1.5m;
                     break;
+
                 case EnumQuestObjectiveType.ManterSaldoAcimaDe:
                     xpBase = 120;
-                    fatorDificuldade += (valorAlvo / 1000m); // Maior o saldo a manter = mais difícil
+
+                    fatorDificuldade += Math.Clamp(valorAlvo / 1000m, 0.0m, 5.0m);
                     break;
+
                 default:
-                    xpBase = 50; // Um valor padrão
+                    xpBase = 50;
                     break;
             }
 
@@ -124,10 +139,10 @@ namespace Coin_up.Services
                     multiplicadorDeDuracao = 1.0m;
                     break;
                 case EnumQuestDuration.Semanal:
-                    multiplicadorDeDuracao = 1.8m;
+                    multiplicadorDeDuracao = 3.0m;
                     break;
                 case EnumQuestDuration.Mensal:
-                    multiplicadorDeDuracao = 3.5m;
+                    multiplicadorDeDuracao = 7.0m;
                     break;
                 default:
                     multiplicadorDeDuracao = 1.0m;
@@ -136,8 +151,7 @@ namespace Coin_up.Services
 
             int xpFinal = (int)Math.Round(xpInicial * multiplicadorDeDuracao);
 
-            return Math.Max(xpFinal, 50); // Garante que toda quest dê no mínimo 50 XP
+            return Math.Max(xpFinal, 50);
         }
-        
     }
 }
