@@ -4,7 +4,6 @@ using Coin_up.Repositories;
 using Coin_up.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace Coin_up.Controllers
@@ -96,6 +95,18 @@ namespace Coin_up.Controllers
             {
                 Code = StatusCodes.Status200OK,
                 Mensage = "Deletado com sucesso"
+            });
+        }
+
+        [HttpGet("buscar-id")]
+        public async Task<IActionResult> GetQuestbyId([FromQuery] Guid questId)
+        {
+            var quest = _unitOfWork.Quest.GetByIdAsync(questId);
+            return Ok(new
+            {
+                Code = StatusCodes.Status200OK,
+                Message = "Busca feita com sucesso",
+                Quest = quest
             });
         }
     }

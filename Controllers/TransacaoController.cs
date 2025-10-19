@@ -54,5 +54,17 @@ namespace Coin_up.Controllers
                 Transacoes = transacoesGroup
             });
         }
+
+        [HttpGet("buscar-id")]
+        public async Task<IActionResult> GetTransacaoById(Guid id)
+        {
+            var transacao = _unitOfWork.Transacao.GetByIdAsync(id);
+            return Ok(new
+            {
+                Code = StatusCodes.Status200OK,
+                Message = "Busca feita com sucesso",
+                Transacao = transacao
+            });
+        }
     }
 }
