@@ -2,9 +2,6 @@
 {
     public enum EnumQuestObjectiveType
     {
-        // Ex: Economize R$ 100 no total do mês
-        EconomizarValorTotal = 0,
-    
         // Ex: Gaste no máximo R$ 200 na categoria Alimentação
         LimitarGastoEmCategoria = 1,
     

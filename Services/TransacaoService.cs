@@ -184,20 +184,6 @@ namespace Coin_up.Services
                         }
                         break;
 
-                    // "Economize R$ 100 no total do mês"
-                    case EnumQuestObjectiveType.EconomizarValorTotal:
-                        // Recalcula a economia total (Receitas - Despesas) desde o início da quest
-                        decimal totalReceitas = await _unitOfWork.Transacao.GetReceitaTotalComDataAsync(userId, quest.DataDeCriacao);
-                        decimal totalDespesas = await _unitOfWork.Transacao.GetDespesaTotalComDataAsync(userId, quest.DataDeCriacao);
-                        decimal economiaAtual = totalReceitas - totalDespesas;
-
-                        // Atualiza o progresso com base na meta de economia
-                        if (quest.ValorAlvo > 0)
-                        {
-                            quest.ProgressoAtual = (int)((economiaAtual / quest.ValorAlvo) * 100);
-                        }
-                        break;
-
                     // "Mantenha o saldo da conta X acima de R$ 500"
                     case EnumQuestObjectiveType.ManterSaldoAcimaDe:
                         // Se o saldo da conta ficou abaixo do alvo, a quest falhou
